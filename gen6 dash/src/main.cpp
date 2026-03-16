@@ -54,10 +54,10 @@ const int numGpioPins = sizeof(gpioPins) / sizeof(gpioPins[0]); ///< @brief The 
  *          GPIO pins as OUTPUTs, setting their initial state to LOW.
  */
 void setup() {
-  // Initialize Serial communication at 9600 baud rate for debugging output.
+  // Initialize Serial communication at 9600 baud rate for output.
   Serial.begin(9600);
   while (!Serial) {
-    ; // Wait for the serial port to connect. This is needed for native USB port only.
+    ; // Wait for the serial port to connect.
   }
   Serial.println("Starting Dash Testing Code...");
   Serial.println("--- GPIO Test ---");
@@ -67,6 +67,7 @@ void setup() {
     pinMode(gpioPins[i], OUTPUT);
     digitalWrite(gpioPins[i], LOW);
   }
+  loop();
 }
 
 /**
@@ -82,15 +83,14 @@ void loop() {
     Serial.print(gpioPins[i]);
     Serial.println(" - Setting HIGH");
     digitalWrite(gpioPins[i], HIGH);
-    delay(1000); // Wait for 1 second to observe the HIGH state.
-
+  } delay(1000);
+  for (int i = 0; i < numGpioPins; i++) {
     Serial.print("Testing GPIO Pin: ");
     Serial.print(gpioPins[i]);
     Serial.println(" - Setting LOW");
     digitalWrite(gpioPins[i], LOW);
-    delay(500); // Wait for 0.5 seconds to observe the LOW state.
-  }
+  }   delay(500); 
 
   Serial.println("--- GPIO Test Cycle Complete ---");
-  delay(2000); // Wait for 2 seconds before repeating the entire GPIO test cycle.
+
 }
