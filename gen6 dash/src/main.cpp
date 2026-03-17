@@ -57,45 +57,43 @@ uint32_t lastLcdTick = 0;
 
 
 void setup() {
-  // put your setup code here, to run once:
-
+  // Initialize Serial communication at 9600 baud rate for debugging output.
   Serial.begin(9600);
-Serial.println("Setup complete");
+  while (!Serial) {
+    ; // Wait for the serial port to connect. This is needed for native USB port only.
+  }
+  Serial.println("Starting Dash Testing Code...");
+  Serial.println("--- GPIO Test ---");
 
-  lcd.init();
-  // Print a message to the LCD.
-  lcd.backlight();
-  lcd.setCursor(0,0);
-  lcd.print("Test");
-Serial.println("LCD complete");
-  pinMode(3,OUTPUT);
-  digitalWrite(3,LOW);
-
-  Serial.begin(9600);
-  Serial.println("AT+C069");
-
-  digitalWrite(3,HIGH);
+  // Iterate through the array of GPIO pins, setting each as an OUTPUT and ensuring it's LOW.
+  for (int i = 0; i < numGpioPins; i++) {
+    pinMode(gpioPins[i], OUTPUT);
+    digitalWrite(gpioPins[i], LOW);
+  }
 }
 
+/**
+ * @brief The Arduino loop function. This function runs repeatedly after setup().
+ * @details It continuously cycles through each defined GPIO pin, setting it HIGH for 1 second,
+ *          then LOW for 0.5 seconds. Serial messages indicate the current pin being tested
+ *          and its state. A 2-second delay is introduced after each complete cycle.
+ */
 void loop() {
-    // put your main code here, to run repeatedly:
+  // Cycle through each GPIO pin, setting it HIGH, waiting, then LOW.
+  for (int i = 0; i < numGpioPins; i++) {
+    Serial.print("Testing GPIO Pin: ");
+    Serial.print(gpioPins[i]);
+    Serial.println(" - Setting HIGH");
+    digitalWrite(gpioPins[i], HIGH);
+    delay(1000); // Wait for 1 second to observe the HIGH state.
 
-    // wait for first time receive long frame from VCU, then wait 9ms and send a synchronization frame to both SSRUs
-    // make sure if not received (not ERROR::OK) then need retry, in case other systems not powered on / have issues
+    Serial.print("Testing GPIO Pin: ");
+    Serial.print(gpioPins[i]);
+    Serial.println(" - Setting LOW");
+    digitalWrite(gpioPins[i], LOW);
+    delay(500); // Wait for 0.5 seconds to observe the LOW state.
+  }
 
-
-
-
-    uint32_t tick = millis();
-
-    if(tick - lastLcdTick >= 100) {
-        lastLcdTick = tick;
-        
-        //update lcd
-    }
-
-
-    can_frame rx_msg;
-    if(can0.readMessage(&rx_msg) == MCP2515::ERROR_OK) {
-    }
+  Serial.println("--- GPIO Test Cycle Complete ---");
+  delay(2000); // Wait for 2 seconds before repeating the entire GPIO test cycle.
 }
