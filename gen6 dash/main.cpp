@@ -8,9 +8,9 @@
  */
 
 #include <Arduino.h>
+#include "BoardConfig.h"
 #include <mcp2515.h>
 #include <LiquidCrystal_I2C.h>
-#include <Wire.h>
 
 // Define pin assignment using actual Arduino pin numbers
 // SPI Pins for CAN Controllers (MCP2515)
@@ -78,6 +78,9 @@ const int numGpioPins = sizeof(gpioPins) / sizeof(gpioPins[0]); ///< @brief The 
  * @details It initializes serial communication for debugging and configures all defined
  *          GPIO pins as OUTPUTs, setting their initial state to LOW.
  */
+const int numGpioPins = sizeof(gpioPins) / sizeof(gpioPins[0]);
+
+
 MCP2515 can0(10);
 LiquidCrystal_I2C lcd(0x27,20,4);
 
@@ -94,34 +97,12 @@ void setup() {
   Serial.println("Starting Dash Testing Code...");
   Serial.println("--- GPIO Test ---");
 
-  // I2C Scanner
-  Serial.println("Scanning I2C devices...");
-  Wire.begin();
-  for (byte address = 1; address < 127; address++) {
-    Wire.beginTransmission(address);
-    if (Wire.endTransmission() == 0) {
-      Serial.print("Found I2C device at 0x");
-      Serial.println(address, HEX);
-    }
-  }
-  Serial.println("I2C scan complete.");
-
+  Serial.begin(9600);
   // Iterate through the array of GPIO pins, setting each as an OUTPUT and ensuring it's LOW.
   for (int i = 0; i < numGpioPins; i++) {
     pinMode(gpioPins[i], OUTPUT);
     digitalWrite(gpioPins[i], LOW);
   }
-  lcd.init();
-  Serial.println("LCD init done");
-  delay(100);
-  lcd.backlight();
-  Serial.println("Backlight on");
-  delay(100);
-  lcd.setCursor(0,0);
-  Serial.println("Cursor set");
-  lcd.print("HELLOWORLD");
-  Serial.println("Printed HELLOWORLD");
-  delay(5000);
 }
 
 /**
@@ -133,35 +114,19 @@ void setup() {
 void loop() {
   // Cycle through each GPIO pin, setting it HIGH, waiting, then LOW.
   for (int i = 0; i < numGpioPins; i++) {
+    Serial.print("Testing GPIO Pin: ");
     Serial.print(gpioPins[i]);
+    Serial.println(" - Setting HIGH");
     digitalWrite(gpioPins[i], HIGH);
-  }    
-  delay(1000); // Wait for 1 second to observe the HIGH state.
-  for (int i = 0; i < numGpioPins; i++) {
+    delay(1000); // Wait for 1 second to observe the HIGH state.
 
+    Serial.print("Testing GPIO Pin: ");
     Serial.print(gpioPins[i]);
+    Serial.println(" - Setting LOW");
     digitalWrite(gpioPins[i], LOW);
+    delay(500); // Wait for 0.5 seconds to observe the LOW state.
   }
-  delay(500); // Wait for 0.5 seconds to observe the LOW state.
-  uint32_t tick = millis();
-    if(tick - lastLcdTick >= 100) {
-        lastLcdTick = tick;
-        lcd.setBacklight(225);
-        lcd.print("HELLO");
-        delay(5000);
-        Serial.print("LCD COMPLETE");
-        pinMode(3,OUTPUT);
-        digitalWrite(3,LOW);
-        Serial.println("AT+C069");
-        digitalWrite(3,HIGH);
-        lcd.setBacklight(225);
-        //update lcd
-    }
-    
 
-
-    can_frame rx_msg;
-    if(can0.readMessage(&rx_msg) == MCP2515::ERROR_OK) {
-    }
-
+  Serial.println("--- GPIO Test Cycle Complete ---");
+  delay(2000); // Wait for 2 seconds before repeating the entire GPIO test cycle.
 }
