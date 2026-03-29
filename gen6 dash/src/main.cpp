@@ -8,6 +8,7 @@
  */
 
 #include <Arduino.h>
+#include "BoardConfig.h"
 #include <mcp2515.h>
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
@@ -47,37 +48,9 @@ const int gpioPins[] = {
   GPIO_1_PIN, GPIO_2_PIN, GPIO_3_PIN, GPIO_4_PIN,
   GPIO_5_PIN, GPIO_6_PIN, GPIO_7_PIN, GPIO_8_PIN
 };
-const int numGpioPins = sizeof(gpioPins) / sizeof(gpioPins[0]); ///< @brief The number of GPIO pins in the `gpioPins` array.
-
-/** edit later for implementation of CAN of dash
- * 
- * MCP2515 mcp2515_motor(CS_CAN_MOTOR); 
- *MCP2515 mcp2515_BMS(CS_CAN_BMS);     
- *MCP2515 mcp2515_();      
- *#define mcp2515_motor mcp2515_DL
- *#define mcp2515_BMS mcp2515_DL
- *constexpr uint8_t NUM_MCP = 3;
- *MCP2515 MCPS[NUM_MCP] = {mcp2515_motor, mcp2515_BMS, mcp2515_DL};
- * 
- * 
- * 
- * 
- * 
- * ENCODER A - PC0 (Analog 0)
- * ENCODER B - PC1 (Analog 1)
- * 
- * SDA - PC4 (Analog 4)
- * SCL - PC5 (Analog 5)
- * CAN0 CS - PB2 (Digital 10)
- * CAN1 CS - PB1 (Digital 9)
-*/
+const int numGpioPins = sizeof(gpioPins) / sizeof(gpioPins[0]);
 
 
-/**
- * @brief The Arduino setup function. This function runs once when the sketch starts.
- * @details It initializes serial communication for debugging and configures all defined
- *          GPIO pins as OUTPUTs, setting their initial state to LOW.
- */
 MCP2515 can0(10);
 LiquidCrystal_I2C lcd(0x27,20,4);
 
@@ -106,6 +79,7 @@ void setup() {
   }
   Serial.println("I2C scan complete.");
 
+  Serial.begin(9600);
   // Iterate through the array of GPIO pins, setting each as an OUTPUT and ensuring it's LOW.
   for (int i = 0; i < numGpioPins; i++) {
     pinMode(gpioPins[i], OUTPUT);
