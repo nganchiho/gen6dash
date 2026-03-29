@@ -8,7 +8,6 @@
  */
 
 #include <Arduino.h>
-#include "BoardConfig.h"
 #include <mcp2515.h>
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
@@ -62,7 +61,6 @@ void setup() {
   // Initialize Serial communication at 9600 baud rate for debugging output.
   Serial.begin(9600);
   while (!Serial) {
-    ; // Wait for the serial port to connect. This is needed for native USB port only.
   }
   Serial.println("Starting Dash Testing Code...");
   Serial.println("--- GPIO Test ---");
@@ -131,9 +129,6 @@ void loop() {
         lcd.setBacklight(225);
         //update lcd
     }
-    
-
-
     can_frame rx_msg;
     if(can0.readMessage(&rx_msg) == MCP2515::ERROR_OK) {
     }
